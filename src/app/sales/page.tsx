@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,14 +10,28 @@ export default function SalesPage() {
   const [bagsSold, setBagsSold] = useState(0);
   const [salesHistory, setSalesHistory] = useState<number[]>([]);
 
-  const bagPrice = 8; // Price per bag
-  const rollPrice = 200; // Price of a bag roll
-  const waterPrice = 24; // Price of a water bottle
+  const bagPrice = 8; // Precio por bolsa
+  const rollPrice = 200; // Precio por rollo de bolsas
+  const waterPrice = 24; // Precio por botella de agua
+
+  useEffect(() => {
+    // Cargar el historial de ventas desde el almacenamiento local al montar el componente
+    const storedHistory = localStorage.getItem("salesHistory");
+    if (storedHistory) {
+      setSalesHistory(JSON.parse(storedHistory));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Guardar el historial de ventas en el almacenamiento local cada vez que cambie
+    localStorage.setItem("salesHistory", JSON.stringify(salesHistory));
+  }, [salesHistory]);
+
 
   const handleRecordSale = () => {
     setSalesHistory([...salesHistory, bagsSold]);
-    // You would typically send this data to a database here
     console.log(`${bagsSold} bolsas de hielo vendidas`);
+    setBagsSold(0);
   };
 
   return (
@@ -59,4 +73,3 @@ export default function SalesPage() {
     </div>
   );
 }
-

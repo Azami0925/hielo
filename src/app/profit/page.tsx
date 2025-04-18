@@ -1,9 +1,7 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -12,9 +10,25 @@ export default function ProfitPage() {
   const [bagRollsPurchased, setBagRollsPurchased] = useState(0);
   const [waterBottlesPurchased, setWaterBottlesPurchased] = useState(0);
 
-  const bagPrice = 8; // Price per bag
-  const rollPrice = 200; // Price of a bag roll
-  const waterPrice = 24; // Price of a water bottle
+  const bagPrice = 8; // Precio por bolsa
+  const rollPrice = 200; // Precio por rollo de bolsas
+  const waterPrice = 24; // Precio por botella de agua
+
+  useEffect(() => {
+    // Obtener el historial de ventas del almacenamiento local
+    const salesHistory = localStorage.getItem("salesHistory");
+    const salesData = salesHistory ? JSON.parse(salesHistory) : [];
+    const totalBagsSold = salesData.reduce((sum:number, sale:number) => sum + sale, 0);
+    setBagsSold(totalBagsSold);
+
+    // Obtener el historial de compras del almacenamiento local
+    const purchasesHistory = localStorage.getItem("purchasesHistory");
+    const purchasesData = purchasesHistory ? JSON.parse(purchasesHistory) : [];
+    const totalBagRolls = purchasesData.reduce((sum:number, purchase:{ bagRolls:number, waterBottles:number }) => sum + purchase.bagRolls, 0);
+    const totalWaterBottles = purchasesData.reduce((sum:number, purchase:{ bagRolls:number, waterBottles:number }) => sum + purchase.waterBottles, 0);
+    setBagRollsPurchased(totalBagRolls);
+    setWaterBottlesPurchased(totalWaterBottles);
+  }, []);
 
   const calculateProfit = () => {
     const revenue = bagsSold * bagPrice;
@@ -42,7 +56,7 @@ export default function ProfitPage() {
                 type="number"
                 id="bagsSold"
                 value={bagsSold}
-                onChange={(e) => setBagsSold(parseInt(e.target.value))}
+                readOnly // El valor se calcula automáticamente
                 placeholder="Ingrese número de bolsas"
               />
             </div>
@@ -55,7 +69,7 @@ export default function ProfitPage() {
                 type="number"
                 id="bagRolls"
                 value={bagRollsPurchased}
-                onChange={(e) => setBagRollsPurchased(parseInt(e.target.value))}
+                readOnly // El valor se calcula automáticamente
                 placeholder="Ingrese número de rollos de bolsas"
               />
             </div>
@@ -71,9 +85,7 @@ export default function ProfitPage() {
                 type="number"
                 id="waterBottles"
                 value={waterBottlesPurchased}
-                onChange={(e) => setWaterBottlesPurchased(
-                  parseInt(e.target.value)
-                )}
+                readOnly // El valor se calcula automáticamente
                 placeholder="Ingrese número de botellas de agua"
               />
             </div>
@@ -91,4 +103,3 @@ export default function ProfitPage() {
     </div>
   );
 }
-

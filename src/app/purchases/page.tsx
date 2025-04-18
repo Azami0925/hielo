@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,15 +13,28 @@ export default function PurchasesPage() {
     { bagRolls: number; waterBottles: number }[]
   >([]);
 
+  useEffect(() => {
+    // Cargar el historial de compras desde el almacenamiento local al montar el componente
+    const storedHistory = localStorage.getItem("purchasesHistory");
+    if (storedHistory) {
+      setPurchasesHistory(JSON.parse(storedHistory));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Guardar el historial de compras en el almacenamiento local cada vez que cambie
+    localStorage.setItem("purchasesHistory", JSON.stringify(purchasesHistory));
+  }, [purchasesHistory]);
+
+
   const handleRecordPurchase = () => {
-    setPurchasesHistory([
-      ...purchasesHistory,
-      { bagRolls: bagRollsPurchased, waterBottles: waterBottlesPurchased },
-    ]);
-    // You would typically send this data to a database here
+    const newPurchase = { bagRolls: bagRollsPurchased, waterBottles: waterBottlesPurchased };
+    setPurchasesHistory([...purchasesHistory, newPurchase]);
     console.log(
       `Compró ${bagRollsPurchased} rollos de bolsas y ${waterBottlesPurchased} botellas de agua`
     );
+    setBagRollsPurchased(0);
+    setWaterBottlesPurchased(0);
   };
 
   return (
@@ -85,4 +98,3 @@ export default function PurchasesPage() {
     </div>
   );
 }
-
