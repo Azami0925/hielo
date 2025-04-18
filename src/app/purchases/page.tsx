@@ -20,7 +20,7 @@ export default function PurchasesPage() {
     ]);
     // You would typically send this data to a database here
     console.log(
-      `Purchased ${bagRollsPurchased} bag rolls and ${waterBottlesPurchased} water bottles`
+      `Compró ${bagRollsPurchased} rollos de bolsas y ${waterBottlesPurchased} botellas de agua`
     );
   };
 
@@ -28,20 +28,20 @@ export default function PurchasesPage() {
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Record Raw Material Purchases</CardTitle>
+          <CardTitle>Registrar Compras de Materia Prima</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <div className="grid gap-2">
               <label htmlFor="bagRolls" className="text-right inline-block w-32">
-                Bag Rolls Purchased:
+                Rollos de Bolsas Comprados:
               </label>
               <Input
                 type="number"
                 id="bagRolls"
                 value={bagRollsPurchased}
                 onChange={(e) => setBagRollsPurchased(parseInt(e.target.value))}
-                placeholder="Enter number of bag rolls"
+                placeholder="Ingrese número de rollos de bolsas"
               />
             </div>
 
@@ -50,7 +50,7 @@ export default function PurchasesPage() {
                 htmlFor="waterBottles"
                 className="text-right inline-block w-32"
               >
-                Water Bottles Purchased:
+                Botellas de Agua Compradas:
               </label>
               <Input
                 type="number"
@@ -59,19 +59,19 @@ export default function PurchasesPage() {
                 onChange={(e) => setWaterBottlesPurchased(
                   parseInt(e.target.value)
                 )}
-                placeholder="Enter number of water bottles"
+                placeholder="Ingrese número de botellas de agua"
               />
             </div>
 
-            <Button onClick={handleRecordPurchase}>Record Purchase</Button>
+            <Button onClick={handleRecordPurchase}>Registrar Compra</Button>
 
             <div className="mt-4">
-              <h3>Purchases History:</h3>
+              <h3>Historial de Compras:</h3>
               <ul>
                 {purchasesHistory.map((purchase, index) => (
                   <li key={index}>
-                    Purchase {index + 1}: {purchase.bagRolls} bag rolls,{" "}
-                    {purchase.waterBottles} water bottles
+                    Compra {index + 1}: {purchase.bagRolls} rollos de bolsas,{" "}
+                    {purchase.waterBottles} botellas de agua
                   </li>
                 ))}
               </ul>
@@ -82,3 +82,4 @@ export default function PurchasesPage() {
     </div>
   );
 }
+

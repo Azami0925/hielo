@@ -12,11 +12,11 @@ export default function Home() {
         <Link href="/sales">
           <Card className="hover:scale-105 transition-transform">
             <CardHeader>
-              <CardTitle>Record Sales</CardTitle>
-              <CardDescription>Record sales of ice bags.</CardDescription>
+              <CardTitle>Registrar Ventas</CardTitle>
+              <CardDescription>Registrar las ventas de bolsas de hielo.</CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Enter the number of ice bags sold.</p>
+              <p>Ingrese el número de bolsas de hielo vendidas.</p>
             </CardContent>
           </Card>
         </Link>
@@ -24,11 +24,11 @@ export default function Home() {
         <Link href="/purchases">
           <Card className="hover:scale-105 transition-transform">
             <CardHeader>
-              <CardTitle>Record Purchases</CardTitle>
-              <CardDescription>Log purchases of raw materials.</CardDescription>
+              <CardTitle>Registrar Compras</CardTitle>
+              <CardDescription>Registrar las compras de materia prima.</CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Record the purchase of ice bag rolls and water.</p>
+              <p>Registre la compra de rollos de bolsas de hielo y agua.</p>
             </CardContent>
           </Card>
         </Link>
@@ -36,11 +36,11 @@ export default function Home() {
         <Link href="/profit">
           <Card className="hover:scale-105 transition-transform">
             <CardHeader>
-              <CardTitle>Profit Calculation</CardTitle>
-              <CardDescription>Calculate profit margins.</CardDescription>
+              <CardTitle>Cálculo de Ganancias</CardTitle>
+              <CardDescription>Calcular los márgenes de ganancia.</CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Calculate profit based on sales and expenses.</p>
+              <p>Calcular la ganancia en base a las ventas y los gastos.</p>
             </CardContent>
           </Card>
         </Link>
@@ -48,3 +48,4 @@ export default function Home() {
     </div>
   );
 }
+

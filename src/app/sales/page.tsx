@@ -17,36 +17,36 @@ export default function SalesPage() {
   const handleRecordSale = () => {
     setSalesHistory([...salesHistory, bagsSold]);
     // You would typically send this data to a database here
-    console.log(`${bagsSold} ice bags sold`);
+    console.log(`${bagsSold} bolsas de hielo vendidas`);
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Record Ice Bag Sales</CardTitle>
+          <CardTitle>Registrar Ventas de Bolsas de Hielo</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <div className="grid gap-2">
               <label htmlFor="bagsSold" className="text-right inline-block w-24">
-                Bags Sold:
+                Bolsas Vendidas:
               </label>
               <Input
                 type="number"
                 id="bagsSold"
                 value={bagsSold}
                 onChange={(e) => setBagsSold(parseInt(e.target.value))}
-                placeholder="Enter number of bags"
+                placeholder="Ingrese número de bolsas"
               />
             </div>
-            <Button onClick={handleRecordSale}>Record Sale</Button>
+            <Button onClick={handleRecordSale}>Registrar Venta</Button>
 
             <div className="mt-4">
-              <h3>Sales History:</h3>
+              <h3>Historial de Ventas:</h3>
               <ul>
                 {salesHistory.map((sale, index) => (
-                  <li key={index}>Sale {index + 1}: {sale} bags</li>
+                  <li key={index}>Venta {index + 1}: {sale} bolsas</li>
                 ))}
               </ul>
             </div>
@@ -56,3 +56,4 @@ export default function SalesPage() {
     </div>
   );
 }
+

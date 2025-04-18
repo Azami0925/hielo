@@ -29,33 +29,33 @@ export default function ProfitPage() {
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Profit Calculation</CardTitle>
+          <CardTitle>Cálculo de Ganancias</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <div className="grid gap-2">
               <label htmlFor="bagsSold" className="text-right inline-block w-32">
-                Bags Sold:
+                Bolsas Vendidas:
               </label>
               <Input
                 type="number"
                 id="bagsSold"
                 value={bagsSold}
                 onChange={(e) => setBagsSold(parseInt(e.target.value))}
-                placeholder="Enter number of bags"
+                placeholder="Ingrese número de bolsas"
               />
             </div>
 
             <div className="grid gap-2">
               <label htmlFor="bagRolls" className="text-right inline-block w-32">
-                Bag Rolls Purchased:
+                Rollos de Bolsas Comprados:
               </label>
               <Input
                 type="number"
                 id="bagRolls"
                 value={bagRollsPurchased}
                 onChange={(e) => setBagRollsPurchased(parseInt(e.target.value))}
-                placeholder="Enter number of bag rolls"
+                placeholder="Ingrese número de rollos de bolsas"
               />
             </div>
 
@@ -64,7 +64,7 @@ export default function ProfitPage() {
                 htmlFor="waterBottles"
                 className="text-right inline-block w-32"
               >
-                Water Bottles Purchased:
+                Botellas de Agua Compradas:
               </label>
               <Input
                 type="number"
@@ -73,12 +73,12 @@ export default function ProfitPage() {
                 onChange={(e) => setWaterBottlesPurchased(
                   parseInt(e.target.value)
                 )}
-                placeholder="Enter number of water bottles"
+                placeholder="Ingrese número de botellas de agua"
               />
             </div>
 
             <div className="mt-4">
-              <h3>Profit:</h3>
+              <h3>Ganancia:</h3>
               <p>${profit}</p>
             </div>
           </div>
@@ -87,3 +87,4 @@ export default function ProfitPage() {
     </div>
   );
 }
+
