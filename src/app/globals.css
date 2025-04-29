@@ -4,9 +4,26 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  /* Updated background with a blue gradient */
-  background: linear-gradient(to bottom, #B0E2FF, #ADD8E6); /* Light Blue Gradient */
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif; /* Updated font family */
+  /* Set background image */
+  background-image: url('https://picsum.photos/seed/iceberg/1920/1080');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative; /* Needed for the overlay */
+  z-index: 0; /* Ensure body is behind the overlay */
+}
+
+/* Add a semi-transparent overlay */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* Adjust darkness and opacity as needed */
+    z-index: -1; /* Place overlay behind content but above the background image */
 }
 
 @layer base {
@@ -85,9 +102,33 @@ body {
   * {
     @apply border-border;
   }
+  /* Ensure text is readable on the image background */
   body {
-    @apply bg-background text-foreground;
+     /* Use foreground color defined in theme, consider using a slightly lighter color if needed */
+     /* Example: color: hsl(var(--foreground) / 0.9); */
+     /* Ensure components with their own backgrounds (like Cards) are still readable */
   }
 }
 
+/* Ensure card text remains readable */
+.card, .card-foreground {
+  color: hsl(var(--card-foreground));
+}
+h1, h3, p, label, li {
+    color: hsl(var(--foreground)); /* Use theme foreground for general text */
+}
 
+/* Ensure input text is visible */
+input {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--background) / 0.8); /* Slightly transparent background for input */
+}
+input::placeholder {
+    color: hsl(var(--muted-foreground));
+}
+
+/* Style Card components for better contrast against the background */
+.card {
+    background-color: hsl(var(--card) / 0.9); /* Make card slightly transparent */
+    backdrop-filter: blur(2px); /* Optional: Add a blur effect to the card background */
+}

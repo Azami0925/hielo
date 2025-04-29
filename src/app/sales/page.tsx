@@ -29,45 +29,56 @@ export default function SalesPage() {
 
 
   const handleRecordSale = () => {
-    setSalesHistory([...salesHistory, bagsSold]);
-    console.log(`${bagsSold} bolsas de hielo vendidas`);
-    setBagsSold(0);
+    const saleAmount = bagsSold > 0 ? bagsSold : 0; // Ensure non-negative sales
+    if (saleAmount > 0) {
+        setSalesHistory([...salesHistory, saleAmount]);
+        console.log(`${saleAmount} bolsas de hielo vendidas`);
+        setBagsSold(0); // Reset input field
+    } else {
+        console.log("Ingrese un número válido de bolsas vendidas.");
+        // Optionally, show a user-friendly message here
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="flex flex-col items-center justify-center min-h-screen py-2 relative z-10">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Registrar Ventas de Bolsas de Hielo</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
-            <div className="grid gap-2">
-              <label htmlFor="bagsSold" className="text-right inline-block w-24">
+            <div className="grid gap-2 items-center grid-cols-[auto_1fr]"> {/* Align label and input */}
+              <label htmlFor="bagsSold" className="text-right">
                 Bolsas Vendidas:
               </label>
               <Input
                 type="number"
                 id="bagsSold"
-                value={bagsSold}
-                onChange={(e) => setBagsSold(parseInt(e.target.value))}
+                value={bagsSold === 0 ? "" : bagsSold} // Show placeholder when 0
+                onChange={(e) => setBagsSold(parseInt(e.target.value) || 0)} // Handle NaN
                 placeholder="Ingrese número de bolsas"
+                min="0" // Prevent negative numbers
               />
             </div>
             <Button onClick={handleRecordSale}>Registrar Venta</Button>
 
             <div className="mt-4">
-              <h3>Historial de Ventas:</h3>
-              <ul>
-                {salesHistory.map((sale, index) => (
-                  <li key={index}>Venta {index + 1}: {sale} bolsas</li>
-                ))}
-              </ul>
+              <h3 className="text-lg font-semibold mb-2">Historial de Ventas:</h3> {/* Improved heading */}
+              {salesHistory.length > 0 ? (
+                <ul className="list-disc pl-5 space-y-1 max-h-48 overflow-y-auto"> {/* Added scroll */}
+                  {salesHistory.map((sale, index) => (
+                    <li key={index}>Venta {index + 1}: {sale} bolsas</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground">No hay ventas registradas.</p> /* Message for empty history */
+              )}
             </div>
           </div>
         </CardContent>
       </Card>
-      <Link href="/">
+      <Link href="/" className="mt-4"> {/* Add margin to the button */}
         <Button variant="secondary">Regresar</Button>
       </Link>
     </div>
