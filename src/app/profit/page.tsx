@@ -1,41 +1,62 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"; // Added CardDescription
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Input } from "@/components/ui/input"; // Ensure Input is imported
+// Input is no longer needed here for display
+// import { Input } from "@/components/ui/input";
 
-interface Sale {
-  // Assuming sales history stores numbers directly based on sales/page.tsx
-  amount: number;
+// Structure for Sale History (must match sales/page.tsx)
+interface SaleEntry {
+  standardBags: number;
+  oz32Bags: number;
+  timestamp: number;
 }
 
+// Structure for Purchase History (must match purchases/page.tsx)
 interface Purchase {
   bagRolls: number;
   waterBottles: number;
 }
 
 export default function ProfitPage() {
-  const [totalBagsSold, setTotalBagsSold] = useState(0);
+  // Sales States
+  const [totalStandardBagsSold, setTotalStandardBagsSold] = useState(0);
+  const [totalOz32BagsSold, setTotalOz32BagsSold] = useState(0);
+
+  // Purchase States
   const [totalBagRollsPurchased, setTotalBagRollsPurchased] = useState(0);
   const [totalWaterBottlesPurchased, setTotalWaterBottlesPurchased] = useState(0);
+
+  // Financial States
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
   const [profit, setProfit] = useState(0);
 
-  const bagPrice = 8; // Precio por bolsa
-  const rollPrice = 200; // Precio por rollo de bolsas
-  const waterPrice = 24; // Precio por botella de agua
+  // --- Prices (Centralize these or pass as props in a larger app) ---
+  const standardBagPrice = 8; // Precio por bolsa estándar
+  const oz32BagPrice = 6;     // Precio por bolsa 32oz
+  const rollPrice = 200;    // Precio por rollo de bolsas
+  const waterPrice = 24;    // Precio por botella de agua
 
   useEffect(() => {
-    // --- Calculate Total Sales ---
+    // --- Calculate Total Sales from History ---
     const salesHistoryRaw = localStorage.getItem("salesHistory");
-    let currentTotalBagsSold = 0;
+    let currentTotalStandardBags = 0;
+    let currentTotalOz32Bags = 0;
+
     if (salesHistoryRaw) {
         try {
-            const salesData: number[] = JSON.parse(salesHistoryRaw);
-            // Ensure it's an array of numbers
-            if (Array.isArray(salesData) && salesData.every(item => typeof item === 'number')) {
-                currentTotalBagsSold = salesData.reduce((sum, sale) => sum + sale, 0);
+            const salesData: SaleEntry[] = JSON.parse(salesHistoryRaw);
+            // Validate format
+            if (Array.isArray(salesData) && salesData.every(item =>
+                typeof item === 'object' && item !== null &&
+                typeof item.standardBags === 'number' &&
+                typeof item.oz32Bags === 'number' // timestamp check optional here
+            )) {
+                currentTotalStandardBags = salesData.reduce((sum, sale) => sum + sale.standardBags, 0);
+                currentTotalOz32Bags = salesData.reduce((sum, sale) => sum + sale.oz32Bags, 0);
             } else {
                 console.error("Invalid sales history format in localStorage.");
                 localStorage.removeItem("salesHistory"); // Clear invalid data
@@ -45,16 +66,21 @@ export default function ProfitPage() {
             localStorage.removeItem("salesHistory"); // Clear corrupted data
         }
     }
-    setTotalBagsSold(currentTotalBagsSold);
+    setTotalStandardBagsSold(currentTotalStandardBags);
+    setTotalOz32BagsSold(currentTotalOz32Bags);
 
-    // --- Calculate Total Purchases ---
+    // --- Calculate Total Purchases from History ---
     const purchasesHistoryRaw = localStorage.getItem("purchasesHistory");
     let currentTotalBagRolls = 0;
     let currentTotalWaterBottles = 0;
     if (purchasesHistoryRaw) {
       try {
         const purchasesData: Purchase[] = JSON.parse(purchasesHistoryRaw);
-         if (Array.isArray(purchasesData) && purchasesData.every(item => typeof item === 'object' && 'bagRolls' in item && 'waterBottles' in item)) {
+         if (Array.isArray(purchasesData) && purchasesData.every(item =>
+             typeof item === 'object' && item !== null &&
+             typeof item.bagRolls === 'number' &&
+             typeof item.waterBottles === 'number'
+         )) {
              currentTotalBagRolls = purchasesData.reduce((sum, purchase) => sum + purchase.bagRolls, 0);
              currentTotalWaterBottles = purchasesData.reduce((sum, purchase) => sum + purchase.waterBottles, 0);
          } else {
@@ -69,14 +95,18 @@ export default function ProfitPage() {
     setTotalBagRollsPurchased(currentTotalBagRolls);
     setTotalWaterBottlesPurchased(currentTotalWaterBottles);
 
-    // --- Calculate Profit ---
-    const revenue = currentTotalBagsSold * bagPrice;
-    const expenses = currentTotalBagRolls * rollPrice + currentTotalWaterBottles * waterPrice;
-    setProfit(revenue - expenses);
+    // --- Calculate Financial Totals ---
+    const calculatedRevenue = (currentTotalStandardBags * standardBagPrice) + (currentTotalOz32Bags * oz32BagPrice);
+    const calculatedExpenses = (currentTotalBagRolls * rollPrice) + (currentTotalWaterBottles * waterPrice);
+    const calculatedProfit = calculatedRevenue - calculatedExpenses;
+
+    setTotalRevenue(calculatedRevenue);
+    setTotalExpenses(calculatedExpenses);
+    setProfit(calculatedProfit);
 
   }, []); // Empty dependency array ensures this runs once on mount
 
-  // Function to format currency (optional but good practice)
+  // Function to format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
   };
@@ -87,55 +117,61 @@ export default function ProfitPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Cálculo de Ganancias</CardTitle>
-           <CardDescription>Resumen basado en ventas y compras registradas.</CardDescription> {/* Added description */}
+           <CardDescription>Resumen basado en ventas y compras registradas.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
-            {/* Use grid for alignment */}
+            {/* Sales Summary */}
+            <h4 className="font-semibold text-lg mt-2 border-b pb-1">Resumen de Ventas</h4>
             <div className="grid grid-cols-[auto_1fr] items-center gap-2">
-              <label htmlFor="bagsSold" className="text-right font-medium">
-                Bolsas Vendidas:
+              <label htmlFor="standardBagsSoldDisplay" className="text-right font-medium">
+                Bolsas Estándar Vendidas:
               </label>
-              {/* Use a styled div instead of Input for display */}
-               <div id="bagsSold" className="p-2 border rounded-md bg-muted text-right">
-                 {totalBagsSold}
+               <div id="standardBagsSoldDisplay" className="p-2 border rounded-md bg-muted text-right">
+                 {totalStandardBagsSold}
+               </div>
+            </div>
+             <div className="grid grid-cols-[auto_1fr] items-center gap-2">
+              <label htmlFor="oz32BagsSoldDisplay" className="text-right font-medium">
+                Bolsas 32oz Vendidas:
+              </label>
+               <div id="oz32BagsSoldDisplay" className="p-2 border rounded-md bg-muted text-right">
+                 {totalOz32BagsSold}
                </div>
             </div>
 
+             {/* Purchases Summary */}
+             <h4 className="font-semibold text-lg mt-4 border-b pb-1">Resumen de Compras</h4>
             <div className="grid grid-cols-[auto_1fr] items-center gap-2">
-              <label htmlFor="bagRolls" className="text-right font-medium">
+              <label htmlFor="bagRollsDisplay" className="text-right font-medium">
                 Rollos Comprados:
               </label>
-               <div id="bagRolls" className="p-2 border rounded-md bg-muted text-right">
+               <div id="bagRollsDisplay" className="p-2 border rounded-md bg-muted text-right">
                  {totalBagRollsPurchased}
                </div>
             </div>
-
             <div className="grid grid-cols-[auto_1fr] items-center gap-2">
-              <label
-                htmlFor="waterBottles"
-                className="text-right font-medium"
-              >
-                Agua Comprada:
+              <label htmlFor="waterBottlesDisplay" className="text-right font-medium">
+                Agua Comprada (Botellas):
               </label>
-               <div id="waterBottles" className="p-2 border rounded-md bg-muted text-right">
+               <div id="waterBottlesDisplay" className="p-2 border rounded-md bg-muted text-right">
                  {totalWaterBottlesPurchased}
                </div>
             </div>
 
-            {/* Display calculated values */}
-             <div className="mt-4 border-t pt-4 grid gap-2">
+            {/* Financial Calculation */}
+             <div className="mt-6 border-t pt-4 grid gap-3"> {/* Increased spacing */}
                  <div className="flex justify-between items-center">
                     <span className="font-medium">Ingresos Totales:</span>
-                    <span className="font-semibold">{formatCurrency(totalBagsSold * bagPrice)}</span>
+                    <span className="font-semibold text-green-700">{formatCurrency(totalRevenue)}</span>
                  </div>
                  <div className="flex justify-between items-center">
                      <span className="font-medium">Gastos Totales:</span>
-                     <span className="font-semibold">{formatCurrency(totalBagRollsPurchased * rollPrice + totalWaterBottlesPurchased * waterPrice)}</span>
+                     <span className="font-semibold text-red-700">{formatCurrency(totalExpenses)}</span>
                  </div>
                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-lg font-bold">Ganancia Neta:</span>
-                    <span className={`text-lg font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className="text-xl font-bold">Ganancia Neta:</span> {/* Made larger */}
+                    <span className={`text-xl font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}> {/* Made larger */}
                         {formatCurrency(profit)}
                     </span>
                  </div>
@@ -144,8 +180,8 @@ export default function ProfitPage() {
           </div>
         </CardContent>
       </Card>
-      <Link href="/" className="mt-4"> {/* Add margin */}
-        <Button variant="secondary">Regresar</Button>
+      <Link href="/" className="mt-6"> {/* Increased margin */}
+        <Button variant="secondary">Regresar al Inicio</Button>
       </Link>
     </div>
   );
